@@ -1,0 +1,7 @@
+{
+    "schema": "./config/schema.js",
+    "dialect": "postgresql",
+    "dbCredentials": {
+      "url": "postgresql://saas-db_owner:ew9kTb5GZlSx@ep-misty-wind-a1v6xip6.ap-southeast-1.aws.neon.tech/saas-video-gen?sslmode=require"
+    }
+  }
