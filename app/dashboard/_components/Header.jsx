@@ -5,10 +5,10 @@ import React from 'react'
 
 const Header = () => {
   return (
-    <div className='p-3 px-5 flex items-center justify-between shadow-md'>
+    <div className='p-1 px-5 flex items-center justify-between shadow-md'>
       <div className='flex gap-3 items-center'>
-        <Image src="/logo.png" alt="logo" width={70} height={70} />
-        <h2 className='font-bold text-xl'>Ai Short Video</h2>
+        <Image src="/logo.png" alt="logo" width={50} height={50} />
+        <h2 className='font-bold text-md'>Ai Short Video</h2>
       </div>
       <div className='flex gap-3 items-center'>
         <Button>Dashboard</Button>
