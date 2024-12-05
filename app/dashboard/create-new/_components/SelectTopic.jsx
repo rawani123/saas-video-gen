@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import {
   Select,
@@ -9,25 +9,35 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-const SelectTopic = ({onUserSelect}) => {
+const SelectTopic = ({ onUserSelect }) => {
   const options = [
     "Custom Prompt",
-    "Random Ai Story",
+    "Random AI Story",
     "Scary Story",
-    "Historical facts",
+    "Historical Facts",
     "Bedtime Story",
     "Motivational Story",
     "Fun Facts",
   ];
 
-  const [selectedoption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleSelectChange = (value) => {
+    setSelectedOption(value);
+    if (value !== "Custom Prompt") {
+      onUserSelect("topic", value);
+    }
+  };
+
+  const handleTextareaChange = (event) => {
+    onUserSelect("topic", event.target.value);
+  };
+
   return (
     <div>
       <h2 className="font-bold text-2xl text-primary">Content</h2>
       <p className="text-gray-500">What is the topic of your video?</p>
-      <Select onValueChange={(value)=> {setSelectedOption(value)
-        value!='Custom Prompt' &&onUserSelect('topic',value)
-      }}>
+      <Select onValueChange={handleSelectChange}>
         <SelectTrigger className="w-full mt-2 p-6 text-lg">
           <SelectValue placeholder="Content Type" />
         </SelectTrigger>
@@ -39,10 +49,12 @@ const SelectTopic = ({onUserSelect}) => {
           ))}
         </SelectContent>
       </Select>
-      {selectedoption=='Custom Prompt' && (
-            <Textarea className='mt-3'
-            onChange={(e)=>onUserSelect('topic',e.target.value)}
-            placeholder='Write prompt on which you want to generate video'/>
+      {selectedOption === "Custom Prompt" && (
+        <Textarea
+          className="mt-3"
+          onChange={handleTextareaChange}
+          placeholder="Write the prompt for your video"
+        />
       )}
     </div>
   );
