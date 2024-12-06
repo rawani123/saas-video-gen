@@ -7,6 +7,7 @@ import SelectDuration from "./_components/SelectDuration";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import CustomLoading from "./_components/CustomLoading";
+import { uuid } from "uuidv4";
 
 const CreateNew = () => {
   // State declarations
@@ -36,6 +37,7 @@ const CreateNew = () => {
     try {
       const { data } = await axios.post(`/api/get-video-script`, { prompt });
       setVideoScript(data.result);
+      generateAudio(data.result);
       console.log("Video Script:", data.result);
     } catch (error) {
       console.error("Error generating video script:", error);
@@ -44,9 +46,29 @@ const CreateNew = () => {
     }
   };
 
+  const generateAudio = async (videoScript) => {
+    let script = "";
+    videoScript.forEach((item) => {
+      script += item.contentText + " ";
+    });
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/generate-mp3", {
+        text: script,
+      });
+      if (response.data.url) {
+        alert("MP3 file generated! Access it here: " + response.data.url);
+      }
+    } catch (error) {
+      console.error("Error generating MP3:", error);
+    }
+  };
+
   return (
     <div className="md:px-20">
-      <h2 className="font-bold text-primary text-4xl text-center">Create New</h2>
+      <h2 className="font-bold text-primary text-4xl text-center">
+        Create New
+      </h2>
       <div className="mt-10 p-10 shadow-md">
         <SelectTopic onUserSelect={handleInputChange} />
         <SelectStyle onUserSelect={handleInputChange} />
