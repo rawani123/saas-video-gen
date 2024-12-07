@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export const POST= async(req)=>{
     try {
         const {prompt}= await req.json();
-        console.log(prompt)
+        // console.log(prompt)
 
         const result = await chatSession.sendMessage(prompt)
         // console.log(result.response.text())
