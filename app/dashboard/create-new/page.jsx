@@ -14,6 +14,7 @@ const CreateNew = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [videoScript, setVideoScript] = useState("");
+  const [audioFileUrl, setAudioFileUrl] = useState("");
 
   // Update form data based on user input
   const handleInputChange = (fieldName, fieldValue) => {
@@ -57,7 +58,9 @@ const CreateNew = () => {
         text: script,
       });
       if (response.data.url) {
-        alert("MP3 file generated! Access it here: " + response.data.url);
+        setAudioFileUrl(response.data.url);
+        console.log("MP3 file generated! Access it here:", response.data.url);
+        // alert("MP3 file generated! Access it here: " + response.data.url);
       }
     } catch (error) {
       console.error("Error generating MP3:", error);
