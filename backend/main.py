@@ -24,7 +24,7 @@ cloudinary.config(
 @app.route('/generate-mp3', methods=['POST'])
 def generate_mp3():
     data = request.json
-    text = data.get('text', '')
+    text = data.get('text', '') 9
 
     if not text:
         return jsonify({"error": "No text provided"}), 400
