@@ -13,8 +13,9 @@ const CreateNew = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [videoScript, setVideoScript] = useState("");
+  const [imageList, setImageList] = useState([]); // New state for images
   const [audioFileUrl, setAudioFileUrl] = useState("");
-  const [caption, setCaption] = useState()
+  const [caption, setCaption] = useState("");
 
   // Update form data
   const handleInputChange = (fieldName, fieldValue) => {
@@ -40,12 +41,51 @@ const CreateNew = () => {
       const { data } = await axios.post(`/api/get-video-script`, { prompt });
       setVideoScript(data.result);
       console.log("Video Script:", data.result);
+
+      // Generate images based on the video script
+      const images = await generateImages(data.result);
+      setImageList(images);
+      console.log("Generated Images:", images);
+
+      // Generate audio
       await generateAudio(data.result);
     } catch (error) {
       console.error("Error generating video script:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Generate images
+  const generateImages = async (videoScript) => {
+    const imageArray = [];
+
+    const query = async (data) => {
+      const response = await fetch(
+        "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
+        {
+          headers: {
+            Authorization: "Bearer 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",
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify(data),
+        }
+      );
+      const result = await response.blob();
+      return result;
+    };
+
+    for (const scene of videoScript) {
+      try {
+        const imageBlob = await query({ inputs: scene.imagePrompt });
+        const imageUrl = URL.createObjectURL(imageBlob);
+        imageArray.push({ prompt: scene.imagePrompt, url: imageUrl });
+      } catch (error) {
+        console.error(`Error generating image for prompt: ${scene.imagePrompt}`, error);
+      }
+    }
+    return imageArray;
   };
 
   // Generate audio
@@ -55,7 +95,7 @@ const CreateNew = () => {
     try {
       setLoading(true);
       const { data } = await axios.post("http://127.0.0.1:5000/generate-mp3", { text: script });
-      
+
       if (data.url) {
         setAudioFileUrl(data.url);
         console.log("MP3 file generated! Access it here:", data.url);
@@ -92,7 +132,18 @@ const CreateNew = () => {
           {loading ? "Processing..." : "Create Short Video"}
         </Button>
       </div>
-      <CustomLoading loading={loading} />
+      {loading && <CustomLoading loading={loading} />}
+      <div className="mt-10">
+        <h3 className="text-2xl font-bold">Generated Images:</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {imageList.map((image, index) => (
+            <div key={index} className="p-4 shadow rounded">
+              <img src={image.url} alt={`Scene ${index + 1}`} className="w-full h-auto" />
+              <p className="mt-2 text-sm text-gray-600">{image.prompt}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
