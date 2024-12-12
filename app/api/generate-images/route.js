@@ -1,39 +1,68 @@
-import { NextResponse } from "next/server";
 import axios from "axios";
+import { v2 as cloudinary } from "cloudinary";
+import { NextResponse } from "next/server";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
+});
 
 export const POST = async (req) => {
-  const { prompt } = await req.json();
-
   try {
-    // Step 1: Fetch the image from Hugging Face
-    const huggingFaceResponse = await axios.post(
-      "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
-      { inputs: prompt },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const { videoScript } = await req.json();
 
-    // Log the response to check the data structure
-    console.log("Hugging Face Response:", huggingFaceResponse.data);
-
-    // Check if image data is returned in Hugging Face response
-    const imageBase64 = huggingFaceResponse.data.image; // Adjust based on actual response structure
-
-    console.log(imageBase64)
-
-    if (!imageBase64) {
-      throw new Error("Image data not found in Hugging Face response.");
+    if (!Array.isArray(videoScript)) {
+      return NextResponse.json(
+        { error: "Invalid video script format" },
+        { status: 400 }
+      );
     }
 
+    const images = [];
 
-    // Step 2: Return the image base64 data or URL (if Hugging Face provides it as URL)
-    return NextResponse.json({ image: imageBase64 });
+    const query = async (data) => {
+      const response = await axios.post(
+        "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          responseType: "arraybuffer", // Handle binary data
+        }
+      );
+      return response.data;
+    };
+
+    for (const scene of videoScript) {
+      try {
+        // Generate image from Hugging Face
+        const imageBlob = await query({ inputs: scene.imagePrompt });
+        const imageBase64 = `data:image/png;base64,${Buffer.from(imageBlob).toString(
+          "base64"
+        )}`;
+
+        // Upload to Cloudinary
+        const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
+          folder: "generated_images", // Organize uploads in a folder
+        });
+
+        images.push(uploadResponse.secure_url); // Store Cloudinary URL
+      } catch (error) {
+        console.error(
+          `Error processing scene prompt: ${scene.imagePrompt}`,
+          error
+        );
+        images.push(null); // Return `null` for failed uploads
+      }
+    }
+
+    return NextResponse.json(images, { status: 200 });
   } catch (error) {
-    console.error("Error in fetch:", error.messgae);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Error processing request:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 };
