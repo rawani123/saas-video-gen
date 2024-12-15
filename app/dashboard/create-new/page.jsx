@@ -19,7 +19,7 @@ const CreateNew = () => {
   const [imageList, setImageList] = useState([]);
   const [audioFileUrl, setAudioFileUrl] = useState("");
   const [caption, setCaption] = useState("");
-  const [playVideo, setPlayVideo] = useState(true);
+  const [playVideo, setPlayVideo] = useState(false);
   const [videoId, setVideoId] = useState(1);
 
   const { user } = useUser();
@@ -149,7 +149,7 @@ const CreateNew = () => {
       })
       .returning({ id: VideoData?.id });
 
-    setVideoId(result[0].id)
+    setVideoId(result[0].id);
     setPlayVideo(true);
 
     console.log(result);
@@ -174,7 +174,8 @@ const CreateNew = () => {
         </Button>
       </div>
       <CustomLoading loading={loading} />
-      <PlayerDailog playVideo={playVideo} videoId={videoId} />
+
+      {playVideo && <PlayerDailog playVideo={playVideo} videoId={videoId} />}
     </div>
   );
 };
