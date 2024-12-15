@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import CustomLoading from "./_components/CustomLoading";
 import { VideoDataContext } from "@/app/_context/VideoDataContext";
+import { db } from "@/config/db";
+import { VideoData } from "@/config/schema";
+import { useUser } from "@clerk/nextjs";
 
 const CreateNew = () => {
   const [formData, setFormData] = useState({});
@@ -15,11 +18,15 @@ const CreateNew = () => {
   const [imageList, setImageList] = useState([]);
   const [audioFileUrl, setAudioFileUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const {user} = useUser();
 
   const { videoData, setVideoData } = useContext(VideoDataContext);
 
   useEffect(() => {
     console.log(videoData);
+    if(Object.keys(videoData).length == 4){
+      saveVideoData(videoData);
+    }
   }, [videoData]);
 
   const handleInputChange = (fieldName, fieldValue) => {
@@ -123,6 +130,21 @@ const CreateNew = () => {
       return "";
     }
   };
+
+  const saveVideoData = async (videoData) => {
+    setLoading(true);
+    console.log("Saving video data", videoData);
+    const result = await db.insert(VideoData).values({
+      script: videoData?.videoScript,
+      audioFileUrl: videoData?.audioFileUrl,
+      captions: videoData?.captions,
+      imageList: videoData?.imageList,
+      createdBy: user?.primaryEmailAddress?.emailAddress
+    }).returning({id:VideoData?.id})
+
+    console.log(result);
+    setLoading(false);
+  }
 
   const renderImages = () =>
     imageList

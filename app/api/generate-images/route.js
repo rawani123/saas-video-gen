@@ -52,10 +52,6 @@ export const POST = async (req) => {
 
         images.push(uploadResponse.secure_url); 
       } catch (error) {
-        console.error(
-          `Error processing scene prompt: ${scene.imagePrompt}`,
-          error
-        );
         images.push(null); // Return `null` for failed uploads
       }
     }
