@@ -11,6 +11,7 @@ import { VideoDataContext } from "@/app/_context/VideoDataContext";
 import { db } from "@/config/db";
 import { VideoData } from "@/config/schema";
 import { useUser } from "@clerk/nextjs";
+import PlayerDailog from "../_components/PlayerDailog";
 
 const CreateNew = () => {
   const [formData, setFormData] = useState({});
@@ -18,13 +19,16 @@ const CreateNew = () => {
   const [imageList, setImageList] = useState([]);
   const [audioFileUrl, setAudioFileUrl] = useState("");
   const [caption, setCaption] = useState("");
-  const {user} = useUser();
+  const [playVideo, setPlayVideo] = useState(true);
+  const [videoId, setVideoId] = useState(1);
+
+  const { user } = useUser();
 
   const { videoData, setVideoData } = useContext(VideoDataContext);
 
   useEffect(() => {
     console.log(videoData);
-    if(Object.keys(videoData).length == 4){
+    if (Object.keys(videoData).length == 4) {
       saveVideoData(videoData);
     }
   }, [videoData]);
@@ -134,26 +138,23 @@ const CreateNew = () => {
   const saveVideoData = async (videoData) => {
     setLoading(true);
     console.log("Saving video data", videoData);
-    const result = await db.insert(VideoData).values({
-      script: videoData?.videoScript,
-      audioFileUrl: videoData?.audioFileUrl,
-      captions: videoData?.captions,
-      imageList: videoData?.imageList,
-      createdBy: user?.primaryEmailAddress?.emailAddress
-    }).returning({id:VideoData?.id})
+    const result = await db
+      .insert(VideoData)
+      .values({
+        script: videoData?.videoScript,
+        audioFileUrl: videoData?.audioFileUrl,
+        captions: videoData?.captions,
+        imageList: videoData?.imageList,
+        createdBy: user?.primaryEmailAddress?.emailAddress,
+      })
+      .returning({ id: VideoData?.id });
+
+    setVideoId(result[0].id)
+    setPlayVideo(true);
 
     console.log(result);
     setLoading(false);
-  }
-
-  const renderImages = () =>
-    imageList
-      .filter((url) => url)
-      .map((url, index) => (
-        <div key={index} className="p-4 shadow rounded">
-          <img src={url} alt={`Scene ${index + 1}`} className="w-full h-auto" />
-        </div>
-      ));
+  };
 
   return (
     <div className="md:px-20">
@@ -172,13 +173,8 @@ const CreateNew = () => {
           {loading ? "Processing..." : "Create Short Video"}
         </Button>
       </div>
-      {loading && <CustomLoading loading={loading} />}
-      <div className="mt-10">
-        <h3 className="text-2xl font-bold">Generated Images:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {renderImages()}
-        </div>
-      </div>
+      <CustomLoading loading={loading} />
+      <PlayerDailog playVideo={playVideo} videoId={videoId} />
     </div>
   );
 };
