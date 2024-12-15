@@ -1,6 +1,13 @@
 "use client";
 import React, { useEffect } from "react";
-import { AbsoluteFill, Audio, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Audio,
+  interpolate,
+  Sequence,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 
 const RemotionVideo = ({
   script,
@@ -32,37 +39,53 @@ const RemotionVideo = ({
   const totalDuration = calculateSequenceDuration();
 
   const getCurrentCaption = () => {
-    const currentTime = frame/30*1000;
+    const currentTime = (frame / 30) * 1000;
     const currentCaption = captions.find(
       (caption) => caption.start <= currentTime && caption.end >= currentTime
     );
-    return currentCaption? currentCaption.text : '';
-  }
+    return currentCaption ? currentCaption.text : "";
+  };
 
   return (
     <AbsoluteFill className="bg-black">
       {imageList.map((item, index) => {
+        const startTime = (index * totalDuration) / imageList.length;
+        const scale = (index)=>interpolate(
+          frame,
+          [startTime, startTime + totalDuration / 2, startTime + totalDuration],
+          index%2==0 ?[1, 1.5, 1]:[1.5, 1, 1.5],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+        );
         return (
           <Sequence
             key={index}
-            from={(index * totalDuration) / imageList.length}
-            durationInFrames={totalDuration / imageList.length}
+            from={startTime}
+            durationInFrames={totalDuration}
           >
-            <AbsoluteFill style={{ justifyContent: "center" ,alignItems:'center'}}>
+            <AbsoluteFill
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
               <img
                 src={item}
                 alt={script}
-                className="w-full h-full object-cover"
+                style={{
+                  width:'100%',
+                  height:'100%',
+                  objectFit:'cover',
+                  transform: `scale(${scale(index)})`,
+                }}
               />
-              <AbsoluteFill style={{
-                color: 'white',
-                justifyContent: 'center',
-                top:undefined,
-                bottom:50,
-                height:150,
-                textAlign:'center',
-                width:'100%',
-              }}>
+              <AbsoluteFill
+                style={{
+                  color: "white",
+                  justifyContent: "center",
+                  top: undefined,
+                  bottom: 50,
+                  height: 150,
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
                 <h2 className="text-2xl">{getCurrentCaption()}</h2>
               </AbsoluteFill>
             </AbsoluteFill>
