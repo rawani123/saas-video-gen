@@ -47,10 +47,10 @@ export const POST = async (req) => {
 
         // Upload to Cloudinary
         const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
-          folder: "generated_images", // Organize uploads in a folder
+          folder: "generated_images", 
         });
 
-        images.push(uploadResponse.secure_url); // Store Cloudinary URL
+        images.push(uploadResponse.secure_url); 
       } catch (error) {
         console.error(
           `Error processing scene prompt: ${scene.imagePrompt}`,
