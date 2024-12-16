@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 const SelectTopic = ({ onUserSelect }) => {
   const options = [
-    "Custom Prompt",
     "Random AI Story",
     "Scary Story",
     "Historical Facts",
@@ -49,13 +48,6 @@ const SelectTopic = ({ onUserSelect }) => {
           ))}
         </SelectContent>
       </Select>
-      {selectedOption === "Custom Prompt" && (
-        <Textarea
-          className="mt-3"
-          onChange={handleTextareaChange}
-          placeholder="Write the prompt for your video"
-        />
-      )}
     </div>
   );
 };
