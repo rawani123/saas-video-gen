@@ -107,7 +107,7 @@ const CreateNew = () => {
     const script = videoScript.map((item) => item.contentText).join(" ");
 
     try {
-      const { data } = await axios.post("http://127.0.0.1:5000/generate-mp3", {
+      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/generate-mp3`, {
         text: script,
       });
 
