@@ -1,6 +1,6 @@
 "use client"
 
-import { CircleUser, FileVideo, PanelsTopLeft, ShieldPlus } from 'lucide-react'
+import { CircleUser, FileVideo, Image, PanelsTopLeft, ShieldPlus } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -23,17 +23,12 @@ const SideNav = () => {
       path:'/dashboard/create-new',
       icon: FileVideo
     },
+    
     {
       id:3,
-      name:'upgrade',
-      path:'/upgrade',
-      icon: ShieldPlus
-    },
-    {
-      id:4,
-      name:'Account',
-      path:'/account',
-      icon: CircleUser
+      name:'Image Generator',
+      path:'/dashboard/image-generator',
+      icon: Image
     }
   ]
   return (
