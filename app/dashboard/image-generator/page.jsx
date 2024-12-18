@@ -2,11 +2,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import CustomLoading from "../create-new/_components/CustomLoading";
+import { useUser } from "@clerk/nextjs";
+import { db } from "@/config/db";
+import { ImageData } from "@/config/schema";
 
 const Page = () => {
   const [script, setScript] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [imageId, setImageId] = useState();
+
+  const { user } = useUser();
 
   const handleInputChange = (e) => {
     setScript(e.target.value);
@@ -24,6 +30,13 @@ const Page = () => {
 
       if (response.data.imageUrl) {
         setImageUrl(response.data.imageUrl);
+        const result = await db.insert(ImageData).values({
+          imageUrl: response.data.imageUrl,
+          createdBy: user?.primaryEmailAddress?.emailAddress,
+        }).returning({ id: ImageData?.id });
+
+        setImageId(result[0].id);
+
         console.log("Image generated successfully");
       } else {
         console.error("No image URL returned from the API");
@@ -32,6 +45,23 @@ const Page = () => {
       console.error("Error generating image:", error);
     } finally {
       setLoading(false); // Set loading to false after the request completes
+    }
+  };
+
+  const downloadImage = async () => {
+    if (!imageUrl) return;
+
+    try {
+      const response = await axios.get(imageUrl, { responseType: 'blob' }); // Fetch the image as a Blob
+      const blob = response.data;
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob); // Create a temporary URL for the Blob
+      link.href = url;
+      link.download = "generated-image.jpg"; // Specify the file name
+      link.click(); // Trigger the download
+      URL.revokeObjectURL(url); // Revoke the URL to clean up
+    } catch (error) {
+      console.error("Error downloading the image:", error);
     }
   };
 
@@ -70,8 +100,14 @@ const Page = () => {
             <img
               src={imageUrl}
               alt="Generated"
-              className="rounded-lg shadow-lg max-w-full h-auto"
+              className="rounded-lg shadow-lg max-w-full h-auto mb-4"
             />
+            <button
+              onClick={downloadImage}
+              className="w-full bg-white text-[#8338ec] py-2 rounded-lg"
+            >
+              Download Image
+            </button>
           </div>
         )}
       </div>

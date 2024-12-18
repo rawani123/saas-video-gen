@@ -18,4 +18,10 @@ export const VideoData = pgTable('videoData', {
   createdBy:varchar('created_by').notNull(),
 });
 
+export const ImageData = pgTable('imageData', {
+  id:serial('id').primaryKey(),
+  imageUrl:varchar('image_url').notNull(),
+  createdBy:varchar('created_by').notNull(),
+});
+
 
