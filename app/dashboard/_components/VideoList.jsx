@@ -13,7 +13,10 @@ const VideoList = ({ videoList }) => {
   };
 
   return (
-    <div className="mt-10 grid sm:grid-cols-2  lg:grid-cols-3 gap-7">
+    <div
+      className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-7 
+                 justify-center items-center md:justify-start"
+    >
       {videoList.map((item) => (
         <div
           key={item.id}
