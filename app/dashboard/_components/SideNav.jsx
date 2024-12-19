@@ -32,7 +32,7 @@ const SideNav = () => {
     }
   ]
   return (
-    <div className='w-64 h-screen shadow-md p-5'>
+    <div className='h-screen shadow-md md:w-52 lg:w-64  p-5'>
       <div>
         {MenuOptions.map((option) => (
           <Link href={option.path} key={option.id}>

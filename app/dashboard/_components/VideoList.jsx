@@ -13,7 +13,7 @@ const VideoList = ({ videoList }) => {
   };
 
   return (
-    <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
+    <div className="mt-10 grid sm:grid-cols-2  lg:grid-cols-3 gap-7">
       {videoList.map((item) => (
         <div
           key={item.id}
@@ -30,7 +30,7 @@ const VideoList = ({ videoList }) => {
             style={{ borderRadius: 25 }}
             inputProps={{
               ...item,
-              setDurationInFrame: (v) => console.log(v),
+              setDurationInFrame: (v) => {},
             }}
           />
         </div>
