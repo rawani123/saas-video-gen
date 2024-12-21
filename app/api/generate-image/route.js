@@ -43,9 +43,9 @@ export const POST = async (req) => {
       )}`;
 
       // Upload the image to Cloudinary
-      // const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
-      //   folder: "generated_images", 
-      // });
+      const uploadResponse = await cloudinary.uploader.upload(imageBase64, {
+        folder: "generated_images", 
+      });
 
       return NextResponse.json({ imageUrl: uploadResponse.secure_url }, { status: 200 });
     } catch (error) {
