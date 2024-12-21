@@ -68,7 +68,7 @@ A cutting-edge SaaS platform designed to generate high-quality photos and videos
 #### Backend
 
 - **Node.js**: Facilitates the creation of scalable and efficient APIs to handle concurrent requests and support real-time features.
-- **Flask**: Integrates AI/ML models seamlessly with the backend to process video and image generation tasks efficiently.
+- **Flask**: A lightweight Python web framework used to create APIs or applications for generating MP3 files dynamically.
 
 #### Database
 
