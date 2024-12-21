@@ -2,17 +2,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import CustomLoading from "../create-new/_components/CustomLoading";
-// import { useUser } from "@clerk/nextjs";
-// import { db } from "@/config/db";
-// import { ImageData } from "@/config/schema";
+import { useUser } from "@clerk/nextjs";
+import { db } from "@/config/db";
+import { ImageData } from "@/config/schema";
 
 const Page = () => {
   const [script, setScript] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
-  // const [imageId, setImageId] = useState();
+  const [imageId, setImageId] = useState();
 
-  // const { user } = useUser();
+  const { user } = useUser();
 
   const handleInputChange = (e) => {
     setScript(e.target.value);
@@ -29,13 +29,13 @@ const Page = () => {
       });
 
       if (response.data.imageUrl) {
-        // setImageUrl(response.data.imageUrl);
-        // const result = await db.insert(ImageData).values({
-        //   imageUrl: response.data.imageUrl,
-        //   createdBy: user?.primaryEmailAddress?.emailAddress,
-        // }).returning({ id: ImageData?.id });
+        setImageUrl(response.data.imageUrl);
+        const result = await db.insert(ImageData).values({
+          imageUrl: response.data.imageUrl,
+          createdBy: user?.primaryEmailAddress?.emailAddress,
+        }).returning({ id: ImageData?.id });
 
-        // setImageId(result[0].id);
+        setImageId(result[0].id);
 
         console.log("Image generated successfully");
       } else {
