@@ -1,3 +1,4 @@
+import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Provider from "./provider";
 import { Outfit } from "next/font/google";
@@ -24,10 +25,12 @@ export const metadata = {
 
 export const viewport = {
   width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
+  initialScale: 1.0,
+  maximumScale: 1.0,
   userScalable: "no",
 };
+
+export const themeColor = 'black';  // Setting themeColor
 
 export default function RootLayout({ children }) {
   return (
