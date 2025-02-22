@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import CustomLoading from "../create-new/_components/CustomLoading";
 import { useUser } from "@clerk/nextjs";
 import { db } from "@/config/db";
 import { ImageData } from "@/config/schema";
+import CustomLoadingImage from "../create-new/_components/CustomLoadingImage";
 
 const Page = () => {
   const [script, setScript] = useState("");
@@ -113,7 +113,7 @@ const Page = () => {
       </div>
 
       {/* Show CustomLoading modal while loading */}
-      <CustomLoading loading={loading} />
+      <CustomLoadingImage loading={loading} />
     </div>
   );
 };
